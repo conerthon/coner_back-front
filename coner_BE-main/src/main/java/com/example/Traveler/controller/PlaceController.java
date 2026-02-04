@@ -15,6 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/places")
 @RequiredArgsConstructor
+//연결위해 추가
+@CrossOrigin(origins = "http://localhost:5173")
 public class PlaceController {
 
     private final PlaceService placeService;

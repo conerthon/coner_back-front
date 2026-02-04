@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import FavoritePictureSlideBar from './FavoritePictureSlideBar';
 import Detail from './detail';
 import DeleteOption from './deleteOption';
+import axios from 'axios';
 
 // App.jsx에서 cardList와 setCardList를 props로 받아옵니다.
 const UrlCatcherPage = ({ cardList, setCardList }) => {
@@ -16,14 +17,39 @@ const UrlCatcherPage = ({ cardList, setCardList }) => {
 
   const handleChange = (e) => setUrl(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (url.trim() === "") return alert("URL을 입력해주세요!");
+
+    try {
+      // 백엔드로  전송
+      const response = await axios.post('http://localhost:8080/api/places/capture', { 
+        url: url,
+        userId: 1,
+        groupId: 1  
+      }, {
+        withCredentials: true
+      }
+    );
     
-    // 나중에 여기에 axios.post(...) 코드가 들어갑니다.
-    // 백엔드가 AI로 분석해서 준 데이터를 setCardList([...cardList, response.data])
-    console.log("서버로 URL 전송:", url);
-    setIsSubmitted(true);
+    // 서버 응답 성공 시 
+      if (response.status === 200 || response.status === 201) {
+        // 백엔드가 준 장소 데이터를 리스트에 추가
+        setCardList([...cardList, response.data]);
+        setIsSubmitted(true);
+        setUrl(''); // 입력창 초기화
+      }
+    } catch (error) {
+      // 예외 처리: 실제로 없는 URL이거나 서버에서 정보를 못 가져올 때
+      console.error("URL Catcher 에러:", error);
+
+      if (error.response && error.response.status === 404) {
+        // 없는 URL임을 사용자에게 알림
+        alert("실제로 존재하지 않는 URL입니다. 정확한 주소를 입력해주세요!");
+      } else {
+        alert("서버 연결에 실패했거나 AI 분석 중 오류가 발생했습니다.");
+      }
+    }
   };
 
   // 하단 카드 클릭 -> 해당 객체 전체를 선택
