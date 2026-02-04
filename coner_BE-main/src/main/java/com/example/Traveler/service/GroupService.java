@@ -1,19 +1,21 @@
 package com.example.Traveler.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // [추가됨]
+
 import com.example.Traveler.domain.GroupRole;
 import com.example.Traveler.domain.TravelGroup;
 import com.example.Traveler.domain.User;
 import com.example.Traveler.domain.UserGroup;
-import com.example.Traveler.dto.GroupResponse; // [추가됨]
+import com.example.Traveler.dto.GroupResponse;
 import com.example.Traveler.repository.TravelGroupRepository;
-import com.example.Traveler.repository.UserGroupRepository;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.example.Traveler.repository.UserGroupRepository; // [추가됨]
 
-import java.util.List; // [추가됨]
-import java.util.stream.Collectors; // [추가됨]
+import lombok.RequiredArgsConstructor; // [추가됨]
 
 @Service
 @RequiredArgsConstructor
