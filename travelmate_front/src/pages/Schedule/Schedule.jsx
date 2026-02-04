@@ -9,10 +9,14 @@ const Schedule = ({ cardList =[]}) => {
   const getSortedData = () => {
     const dataCopy = [...cardList]; 
     if (sortType === 'latest') {
-      return dataCopy.sort((a, b) => b.id - a.id); // 최신순 (ID 역순)
+      return dataCopy.sort((a, b) => b.id - a.id); // 최신순(id 역순)
     } else {
-      // 투표 정보가 없으면 0으로 처리해 에러 방지
-      return dataCopy.sort((a, b) => (b.selectors || 0) - (a.selectors || 0)); 
+      // 투표순
+      return dataCopy.sort((a, b) => {
+        const aLikes = a.votes?.filter(v => v.isLike).length || 0;
+        const bLikes = b.votes?.filter(v => v.isLike).length || 0;
+        return bLikes - aLikes;
+      });
     }
   };
 
@@ -24,22 +28,14 @@ const Schedule = ({ cardList =[]}) => {
 
   // 생존 장소
   const checkSurvival = (card) => {
-    const votes = card.selectors || 0; // 장소가 받은 표
+    const likeVotes = card.votes?.filter(v => v.isLike === true).length || 0; // is_like만
 
     if (totalVoters === 0) return false; // 투표자가 없으면 생존 불가
 
-    //2명일 때는: 100% -> 생존
-    if (totalVoters === 2) {
-      return votes === 2;
-    }
-
-    //3명 이상일 때는: 50% 이상 -> 받아야 생존
-    if (totalVoters >= 3) {
-      return votes >= (totalVoters / 2);
-    }
-
-    //1명일 때는: 1표 -> 생존
-    return votes > 0;
+    //인원수별 규칙
+    if (totalVoters === 2) { return likeVotes === 2;  }
+    if (totalVoters >= 3) { return likeVotes >= (totalVoters / 2); }
+    return likeVotes > 0;
   };
 
   // checkSurvival 통과 시 생존
