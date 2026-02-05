@@ -45,7 +45,7 @@ const Navbar = () => {
   const fetchMyGroups = async () => {
     try {
       // API 호출
-      const response = await axios.get('/api/groups/my', { withCredentials: true });
+      const response = await axios.get('http://localhost:8080/api/groups/my', { withCredentials: true });
       
       // 데이터가 배열인지 확인 후 저장 (안전장치)
       if (Array.isArray(response.data)) {
@@ -101,7 +101,7 @@ const Navbar = () => {
       return;
     }
     try {
-      const response = await axios.post('/api/groups', { groupName: groupNameInput }, { withCredentials: true });
+      const response = await axios.post('http://localhost:8080/api/groups', { groupName: groupNameInput }, { withCredentials: true });
       setCreatedGroupData({
         name: response.data.groupName,
         code: response.data.inviteCode
@@ -119,7 +119,7 @@ const Navbar = () => {
       return;
     }
     try {
-      await axios.post('/api/groups/join', { inviteCode: inviteCodeInput }, { withCredentials: true });
+      await axios.post('http://localhost:8080/api/groups/join', { inviteCode: inviteCodeInput }, { withCredentials: true });
       alert("그룹에 성공적으로 참여했습니다!");
       setIsModalOpen(false);
       fetchMyGroups(); // 목록 갱신

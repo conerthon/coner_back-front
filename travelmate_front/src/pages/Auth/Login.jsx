@@ -20,6 +20,8 @@ export default function Login() {
     const response = await axios.post('http://localhost:8080/api/auth/login', {
       email: id,      // 사용자가 입력한 id를 DB의 id 필드에 매칭
       password: pw    // 비밀번호
+    },{
+      withCredentials: true // 이 부분이 핵심입니다!
     });
 
     // id/pw확인 추가
