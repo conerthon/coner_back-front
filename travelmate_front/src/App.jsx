@@ -17,9 +17,7 @@ import MyPage from './pages/My/MyPage';
 
 function App() {
   // ▼▼▼ 더미데이터삭제 ▼▼▼
-  const [cardList, setCardList] = useState([
-   
-  ]);
+  const [cardList, setCardList] = useState([]);
 
   return (
     <BrowserRouter>
@@ -43,7 +41,7 @@ function App() {
             {/* Tinder는 데이터를 보여주기만 하므로 cardList만 전달 */}
             <Route 
               path="/tinder" 
-              element={<Tinder cardList={cardList} />} 
+              element={<Tinder cardList={cardList} setCardList={setCardList} />} 
             />
             <Route path="/schedule" element={<Schedule cardList={cardList} />} />
             
