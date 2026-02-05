@@ -16,6 +16,10 @@ import java.util.List; // [추가됨]
 @RestController
 @RequestMapping("/api/groups")
 @RequiredArgsConstructor
+@CrossOrigin(
+        origins = "http://localhost:5173",
+        allowCredentials = "true"
+)
 public class GroupController {
 
     private final GroupService groupService;
