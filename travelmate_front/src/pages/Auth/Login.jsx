@@ -18,7 +18,7 @@ export default function Login() {
     try {
     // 백엔드 서버로 로그인 정보 전송
     const response = await axios.post('http://localhost:8080/api/auth/login', {
-      email: id,      // 사용자가 입력한 id를 DB의 email 필드에 매칭
+      email: id,      // 사용자가 입력한 id를 DB의 id 필드에 매칭
       password: pw    // 비밀번호
     });
 
@@ -27,9 +27,12 @@ export default function Login() {
       const token = response.data.token || 'im-login-token'; 
       localStorage.setItem('token', token); 
       
+      //유저 정보 저장
+      localStorage.setItem('user', JSON.stringify(response.data));
+      
       setError(null);
       alert("로그인에 성공했습니다!");
-      window.location.href = '/'; // 메인으로 이동
+      navigate('/'); // 메인으로 이동
     }
   } catch (error) {
     // 로그인 실패 처리 (ID/PW 불일치, 서버 에러 등)

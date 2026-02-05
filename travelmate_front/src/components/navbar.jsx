@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // [필수] 서버 통신을 위해 추가
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate,useLocation } from 'react-router-dom';
 
 // 이미지 import (경로는 기존 그대로 유지)
 import logo from '../assets/images/navbar/logo.svg';
@@ -14,6 +14,7 @@ import Tinder from '../assets/images/navbar/TinderforTravel.svg';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false); 
   
   // [수정 1] 초기값을 빈 배열 []로 설정하여 맵핑 오류 방지
@@ -29,11 +30,16 @@ const Navbar = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const user = localStorage.getItem('user');
+
+    if (token && user) {
       setIsLoggedIn(true);
       fetchMyGroups(); // 로그인 상태라면 그룹 목록 불러오기
+    } else {
+      setIsLoggedIn(false);
+      setMyGroups([]);
     }
-  }, []);
+  }, [location]);
 
   // [수정 2] DB에서 그룹 목록 가져오는 함수
   const fetchMyGroups = async () => {
@@ -55,6 +61,8 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
     setIsLoggedIn(false);
     setMyGroups([]);
     alert("로그아웃 되었습니다.");

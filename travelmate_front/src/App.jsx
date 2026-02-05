@@ -13,6 +13,7 @@ import Signup from './pages/Auth/Signup';
 import Tinder from './pages/Tinder/MainTinder';
 import UrlCatcherPage from './pages/URLCatcher/UrlCatcherPage'; // 경로 확인 필요
 import Schedule from './pages/Schedule/Schedule';
+import MyPage from './pages/My/MyPage';
 
 function App() {
   // ▼▼▼ 더미데이터삭제 ▼▼▼
@@ -29,6 +30,7 @@ function App() {
             <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/mypage" element={<MyPage />} />
 
             {/* ▼▼▼ 2. Props로 데이터 전달 ▼▼▼ */}
             
