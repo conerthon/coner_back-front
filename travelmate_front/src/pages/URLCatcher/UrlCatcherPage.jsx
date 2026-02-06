@@ -6,12 +6,11 @@ import DeleteOption from './deleteOption';
 import busanImg from '../../assets/images/url/busanImg.jpg';
 import cafeImg from '../../assets/images/url/cafeImg.JPG'; 
 import haemokImg from '../../assets/images/url/haemokImg.jpg';
-
-
+import blueline from '../../assets/images/url/blueline.jpg';
+import gamcheon from '../../assets/images/url/gamcheon.jpg';
 
 const UrlCatcherPage = ({ cardList, setCardList }) => {
   const [url, setUrl] = useState('');
-  // 데이터가 있으면 항상 슬라이드바가 보이도록 초기값을 cardList 존재 여부로 설정 가능합니다.
   const [isSubmitted, setIsSubmitted] = useState(cardList.length > 0);
   const [selectedItem, setSelectedItem] = useState(null); 
   const [showDelete, setShowDelete] = useState(false);
@@ -22,44 +21,56 @@ const UrlCatcherPage = ({ cardList, setCardList }) => {
     e.preventDefault();
     if (url.trim() === "") return alert("URL을 입력해주세요!");
 
-    // 시연용 더미 데이터 풀 (Schedule과 Detail 컴포넌트 필드에 완벽 대응)
-    const demoPool = [
-      {
-        id: 101,
+    let selectedData = null;
+
+    // URL 키워드 매칭 
+    if (url.includes("busan") || url.includes("attraction")) {
+      selectedData = {
         title: "광안리 해수욕장",
         imageUrl: busanImg,
-        tags: ["#부산", "#광안대교", "#야경명소"], // Detail.jsx의 tags.map 에러 방지
-        votes: [], // Schedule.jsx의 투표 계산용
-        users: []  // 투표 인원 계산용
-      },
-      {
-        id: 102,
+        tags: ["#부산", "#광안대교", "#야경명소"],
+      };
+    } else if (url.includes("haemok") || url.includes("restaurant")) {
+      selectedData = {
         title: "해운대 해목",
-        imageUrl:haemokImg,
+        imageUrl: haemokImg,
         tags: ["#해운대", "#장어덮밥", "#맛집추천"],
-        votes: [],
-        users: []
-      },
-      {
-        id: 103,
+      };
+    } else if (url.includes("cafe") || url.includes("waveoncoffee")) {
+      selectedData = {
         title: "웨이브온 커피",
-        imageUrl:cafeImg,
+        imageUrl: cafeImg,
         tags: ["#기장카페", "#오션뷰", "#인생샷"],
-        votes: [],
-        users: []
-      }
-    ];
+      };
+    } else if (url.includes("train") || url.includes("blueline")) { 
+      selectedData = {
+        title: "해운대 블루라인파크",
+        imageUrl: blueline, 
+        tags: ["#해변열차", "#스카이캡슐", "#바다뷰"],
+      };
+    } else if (url.includes("village") || url.includes("gamcheon")) { 
+      selectedData = {
+        title: "감천문화마을",
+        imageUrl: gamcheon, 
+        tags: ["#어린왕자", "#벽화마을", "#부산포토존"],
+      };
+    } else {
+      return alert("분석할 수 없는 URL입니다.");
+    }
 
-    // 현재 리스트 길이에 맞춰 다음 데이터를 순차적으로 선택
-    const nextData = { ...demoPool[cardList.length % demoPool.length], id: Date.now() };
+    // 공통 필드 결합
+    const nextData = {
+      ...selectedData,
+      id: Date.now(),
+      votes: [],
+      users: []
+    };
 
-    // 상태 업데이트
+    // 상태 업데이트 및 저장
     const newList = [...cardList, nextData];
     setCardList(newList);
     setIsSubmitted(true);
     setUrl('');
-
-    // 마이페이지 및 스케줄 연동을 위해 로컬 스토리지 저장
     localStorage.setItem('cardList', JSON.stringify(newList));
   };
 
@@ -101,7 +112,6 @@ const UrlCatcherPage = ({ cardList, setCardList }) => {
         </button>
       </form>
 
-      {/* 이미 데이터가 있거나 방금 제출했다면 슬라이드바 표시 */}
       {(isSubmitted || cardList.length > 0) && (
         <div className="w-full max-w-6xl animate-fade-in-up">
           <FavoritePictureSlideBar 
