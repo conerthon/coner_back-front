@@ -33,7 +33,7 @@ try {
     const response = await axios.post('http://localhost:8080/api/auth/signup', {
       email: formData.id, 
       password: formData.password
-    });
+    },{ withCredentials: true});
 
     // 회원가입 성공 처리
     if (response.status === 200 || response.status === 201) {

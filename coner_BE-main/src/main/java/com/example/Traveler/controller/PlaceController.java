@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/places")
 @RequiredArgsConstructor
 //연결위해 추가
-@CrossOrigin(origins = "http://localhost:5173")
+//@CrossOrigin(origins = "http://localhost:5173",allowCredentials = "true")
 public class PlaceController {
 
     private final PlaceService placeService;
