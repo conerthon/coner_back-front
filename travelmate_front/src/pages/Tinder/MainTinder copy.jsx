@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import SwipeCard from "./SwipeCard";
 
-export default function MainTinder({ cardList }) {
+export default function MainTinder({ cardList, setCardList, groupId }) {
   // 1. 현재 보여줄 카드 목록 (이미지 주소들)
   const [cards, setCards] = useState([]);
   //추가-카드 이름 목록
@@ -22,6 +22,29 @@ export default function MainTinder({ cardList }) {
   // 3. ▼▼▼ 스와이프 핸들러 수정 (기록 저장) ▼▼▼
   const handleSwipe = (direction) => {
     const currentCard = cards[0]; // 현재 처리 중인 카드
+    if (!currentCard) return;
+
+    const isLike = direction === "right";
+    const placeId = currentCard.id || currentCard.placeId;
+
+    // 1. 서버 전송 (기존 유지)
+    sendVote(placeId, isLike);
+
+    // 2. [핵심] Schedule 페이지와 연동되도록 부모의 cardList를 업데이트합니다.
+    if (setCardList) {
+      setCardList(prevList => prevList.map(card => {
+        if (card.id === placeId) {
+          return {
+            ...card,
+            // Schedule.jsx의 totalVoters와 checkSurvival이 인식하는 구조
+            votes: [{ isLike: isLike, userId: 1 }], 
+            users: [1] // 투표 인원 계산용
+          };
+        }
+        return card;
+      }));
+    }
+
 
     if (direction === "left") {
       // 삭제 목록에 추가

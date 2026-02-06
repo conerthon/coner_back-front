@@ -3,7 +3,7 @@ import SwipeCard from "./SwipeCard";
 import axios from "axios";
 
 // groupId를 부모 컴포넌트(App.jsx 등)에서 props로 꼭 넘겨줘야 합니다!
-export default function MainTinder({ cardList, groupId }) {
+export default function MainTinder({ cardList,setCardList, groupId }) {
   
   // 1. 객체 전체를 저장하도록 변경 (id, imageUrl 등 모두 포함)
   const [cards, setCards] = useState([]);
@@ -17,7 +17,7 @@ export default function MainTinder({ cardList, groupId }) {
     if (cardList && cardList.length > 0) {
       setCards(cardList); 
     }
-  }, [cardList]);
+  }, []);
 
   // 2. ▼▼▼ 서버로 투표 전송하는 함수 ▼▼▼
   const sendVote = async (placeId, isLike) => {
@@ -42,18 +42,25 @@ export default function MainTinder({ cardList, groupId }) {
 
   // 3. 스와이프 핸들러 수정
   const handleSwipe = (direction) => {
-    const currentCard = cards[0]; // 현재 카드 객체
-
+    // 1. 현재 카드 가져오기
+    const currentCard = cards[0];
     if (!currentCard) return;
 
-    // 오른쪽(Right) = 좋아요(True), 왼쪽(Left) = 싫어요(False)
     const isLike = direction === "right";
+    const placeId = currentCard.id || currentCard.placeId;
 
-    // ▼ 서버로 데이터 전송
-    // currentCard.id 혹은 currentCard.placeId (백엔드에서 오는 필드명에 맞춰 수정하세요)
-    const placeId = currentCard.id || currentCard.placeId; 
+    // 2. 서버 및 부모 상태 업데이트 (기존 성공 로직 유지)
     sendVote(placeId, isLike);
+    if (typeof setCardList === 'function') {
+      setCardList(prevList => prevList.map(card => {
+        if (String(card.id) === String(placeId)) {
+          return { ...card, votes: [{ isLike: isLike, userId: 1 }], users: [1] };
+        }
+        return card;
+      }));
+    }
 
+    // UI 상태 업데이트 (현재 틴더 페이지 내 결과창용)
     if (direction === "left") {
       setDeletedCards((prev) => [...prev, currentCard]);
       console.log("❌ 삭제됨:", currentCard);
@@ -63,7 +70,7 @@ export default function MainTinder({ cardList, groupId }) {
     }
 
     // 다음 카드로 넘어감
-    setCards((prev) => prev.slice(1));
+    setCards(prev => prev.slice(1));;
   };
 
   return (

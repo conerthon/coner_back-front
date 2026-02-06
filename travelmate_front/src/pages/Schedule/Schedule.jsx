@@ -24,18 +24,19 @@ const Schedule = ({ cardList =[]}) => {
 
   // ▼▼▼ DB 구조(Vote 테이블 is_like)와 호환되는 로직 , 인원수 생존 규칙도 적용 ▼▼▼
 
-  const totalVoters = new Set(cardList.flatMap(card => card.users || [])).size; //참여 인원 ->  user_id 리스트의 중복을 제거해서 셈
+  const totalVoters = new Set(cardList.flatMap(card => card.users || [])).size || (cardList.some(c => c.votes?.length > 0) ? 1 : 0); //참여 인원 ->  user_id 리스트의 중복을 제거해서 셈
 
   // 생존 장소
   const checkSurvival = (card) => {
-    const likeVotes = card.votes?.filter(v => v.isLike === true).length || 0; // is_like만
+    // 해당 카드의 좋아요 개수 계산
+    const likeVotes = card.votes?.filter(v => v.isLike === true).length || 0;
 
-    if (totalVoters === 0) return false; // 투표자가 없으면 생존 불가
+    // [수정] 투표 인원이 1명일 때는 1표만 있어도 생존으로 인정합니다.
+    if (totalVoters <= 1) return likeVotes >= 1; 
 
-    //인원수별 규칙
-    if (totalVoters === 2) { return likeVotes === 2;  }
-    if (totalVoters >= 3) { return likeVotes >= (totalVoters / 2); }
-    return likeVotes > 0;
+    // 2명 이상일 때의 규칙 (기존 유지)
+    if (totalVoters === 2) return likeVotes === 2;
+    return likeVotes >= (totalVoters / 2);
   };
 
   // checkSurvival 통과 시 생존
@@ -87,8 +88,8 @@ const Schedule = ({ cardList =[]}) => {
 
         {/* Survaival 카드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedData.length > 0 ? (
-            sortedData.map((item) => (
+          {survivedList.length > 0 ? (
+            survivedList.map((item) => (
               <Survival key={item.id} item={item} />
             ))
           ) : (
